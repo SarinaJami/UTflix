@@ -1,19 +1,29 @@
 #include "UserInterface.h"
+#include "UTflix.h"
 #include <iostream>
 #include <vector>
 #include <string>
+#include <exception>
 
 using namespace std;
 
 int main(int argc, const char* argv[])
 {
-  auto userInterface = UserInterface::getInstance();
+  auto* utflix = new UTflix;
+  auto* userInterface = UserInterface::getInstance(utflix);
 
-  string email, username, password;
-  int age;
-  cin >> email >> username >> password >> age;
-
-  userInterface->signup(email, username, password, age);
+  string cmd;
+  while(getline(cin, cmd))
+  {
+    if (!cmd.empty())
+    {
+      try {
+        userInterface->processRequest(cmd);
+      } catch (exception& ex) {
+        cout << ex.what() << endl;
+      }
+    }
+  }
 
   return 0;
 }

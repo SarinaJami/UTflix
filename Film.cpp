@@ -1,20 +1,23 @@
 #include "Film.h"
+#include "Exception.h"
+#include <utility>
 
 using namespace std;
 
 Film::Film(int _id, std::string _name, int _year, double _length, double _price,
   std::string _summary, std::string _director, Publisher* _publisher) : film_id(_id),
   name(_name), year(_year), length(_length), price(_price), summary(_summary),
-  director(_director), publisher(_publisher), mean_rate(0)
+  director(_director), publisher(_publisher), mean_rate(0), is_deleted(false),
+  comment_id_tracker(0)
 {
 }
 
-Comment::Comment(int _comment_id, Client* _user, string _content) :
-  comment_id(++_comment_id), user(_user), content(_content)
+Film::Comment::Comment(int _comment_id, Client* _client_user, string _content) :
+  comment_id(_comment_id), client_user(_client_user), content(_content)
 {
 }
 
-Rate::Rate(Client* _user, double _score) : score(_score), user(_user)
+Film::Rate::Rate(Client* _user, double _score) : score(_score), user(_user)
 {
 }
 
@@ -30,16 +33,15 @@ void Film::addComment(const string& _content, Client* purchaser)
   if (!isPurchaser(purchaser))
     throw PermissionDenied();
 
-  Comment comment(comments.size(), purchaser, _content);
+  Comment comment(++comment_id_tracker, purchaser, _content);
   comments.push_back(comment);
 
   // inform publisher
 }
 
-void Film::addReply(const string& _content, int _comment_id)
+void Film::addReply(const std::string& _content, int _comment_id)
 {
-  int index = searchForComment(_comment_id);
-  comments[index].reply = _content;
+  comments[searchForComment(_comment_id)].reply = _content;
 
   // inform purchaser
 }
@@ -67,22 +69,26 @@ void Film::addRate(double _score, Client* purchaser)
   calculateMeanRate();
 }
 
+void Film::deleteComment(int _comment_id)
+{
+  comments.erase(comments.begin() + searchForComment(_comment_id));
+}
+
+int Film::searchForComment(int id) const
+{
+  for (int i = 0; i < comments.size(); ++i)
+    if (comments[i].comment_id == id)
+      return i;
+      
+  throw NotFound();
+}
+
 void Film::calculateMeanRate()
 {
   double rate_sum = 0.00;
   for (int i = 0; i < rates.size(); ++i)
     rate_sum += rates[i].score;
   mean_rate = rate_sum / rates.size();
-}
-
-int Film::searchForComment(int _comment_id)
-{
-  for (int i = 0; i < comments.size(); ++i)
-  {
-    if (comments[i].comment_id == _comment_id)
-      return i;
-  }
-  throw PermissionDenied();
 }
 
 bool Film::isPurchaser(Client* purchaser)
@@ -95,6 +101,19 @@ bool Film::isPurchaser(Client* purchaser)
   return false;
 }
 
+ostream& operator<<(ostream& out, const Film* film)
+{
+  out << film->film_id << " | " <<
+  film->name << " | " <<
+  film->length << " | " <<
+  film->price << " | " <<
+  film->mean_rate << " | " <<
+  film->year << " | " <<
+  film->director;
+
+  return out;
+}
+
 void Film::printDetails() const
 {
   cout << "Details of Film " << name << "\n" <<
@@ -105,6 +124,8 @@ void Film::printDetails() const
   "Summary = " << summary << "\n" <<
   "Rate = " << mean_rate << "\n" <<
   "Price = " << price << "\n\n" << endl;
+
+  printComments();
 }
 
 void Film::printComments() const
@@ -116,6 +137,19 @@ void Film::printComments() const
     comments[i].comment_id << ".1. " << comments[i].reply << endl;
   }
   cout << "\n" << endl;
+}
+
+void Film::printAsRecommendation() const
+{
+  cout << film_id << " | " <<
+  name << " | " <<
+  length << " | " <<
+  director;
+}
+
+void Film::remove()
+{
+  is_deleted = true;
 }
 
 void Film::editName(std::string _name)
@@ -176,4 +210,14 @@ int Film::getYear()
 string Film::getDirector()
 {
   return director;
+}
+
+bool Film::isRemoved()
+{
+  return is_deleted;
+}
+
+Publisher* Film::getPublisher()
+{
+  return publisher;
 }

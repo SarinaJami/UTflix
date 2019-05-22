@@ -1,10 +1,12 @@
 #include "Client.h"
+#include "Exception.h"
+#include <iterator>
 
 using namespace std;
 
 Client::Client(int _user_id, string _username, string _password, string _email,
-  int _age) : user_id(_user_id), username(_username),
-  password(_password), email(_email), age(_age)
+  int _age) : user_id(_user_id), username(_username), password(_password),
+  email(_email), age(_age), money(0)
 {
 }
 
@@ -20,23 +22,22 @@ void Client::addCredit(double amount)
 
 void Client::buyFilm(Film* film)
 {
-  if (!isEnoughMoney(film))
-    throw PermissionDenied();
+  pay(film);
   purchased_films.push_back(film);
 }
 
-bool Client::isEnoughMoney(Film* film) const
+void Client::pay(Film* film)
 {
   if (money < film->getPrice())
-    return false;
-  return true;
+    throw PermissionDenied();
+  money -= film->getPrice();
 }
 
 void Client::viewPurchasedFilms(string name, double price, int min_year,
   int max_year, string director)
 {
-  vector<Film*> filtered_films = filterFilms(name, price, min_year,
-                                    max_year, director);
+  vector<Film*> filtered_films = filterFilms(name, price, min_year, max_year,
+    director);
   printFilms(filtered_films);
 
 }
@@ -75,13 +76,13 @@ vector<Film*> Client::filterFilms(string name, double price, int min_year,
     if (!name.empty())
       if (purchased_films[i]->getName() != name)
         name_filtered = false;
-    if (price != 0)
+    if (price != -1)
       if (purchased_films[i]->getPrice() != price)
         price_filtered = false;
-    if (min_year != 0)
+    if (min_year != -1)
       if (purchased_films[i]->getYear() < min_year)
         min_year_filtered = false;
-    if (max_year != 0)
+    if (max_year != -1)
       if (purchased_films[i]->getYear() > max_year)
         max_year_filtered = false;
     if (!director.empty())
@@ -125,6 +126,22 @@ void Client::viewAllNotifications(int limit) const
   }
 }
 
+ostream& operator<<(ostream& out, const Client* user)
+{
+  out << user->user_id << " | " <<
+  user->username << " | " <<
+  user->email;
+
+  return out;
+}
+
+// bool operator==(const Client& user) const
+// {
+//   if (username == user.username && password == user.password)
+//     return true;
+//   return false;
+// }
+
 const string& Client::getUsername() const
 {
   return username;
@@ -133,6 +150,16 @@ const string& Client::getUsername() const
 const string& Client::getPassword() const
 {
   return password;
+}
+
+int Client::getId() const
+{
+  return user_id;
+}
+
+double Client::getMoney() const
+{
+  return money;
 }
 
 const vector<Film*>& Client::getPurchasedFilms() const

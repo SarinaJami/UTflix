@@ -1,33 +1,31 @@
 #ifndef FILM_H_
 #define FILM_H_
 
-#include "Exception.h"
 #include <iostream>
 #include <vector>
 #include <string>
-#include <utility>
 
 class Client;
 class Publisher;
-
-struct Comment {
-  Comment(int _comment_id, Client* _user, std::string _content);
-  int comment_id;
-  std::string content;
-  std::string reply;
-  Client* user;
-};
-
-struct Rate {
-  Rate(Client* _user, double _score);
-  double score;
-  Client* user;
-};
 
 class Film {
 public:
   Film(int _id, std::string _name, int _year, double _length, double _price,
     std::string _summary, std::string _director, Publisher* _publisher);
+
+  struct Comment {
+    Comment(int _comment_id, Client* _client_user, std::string _content);
+    int comment_id;
+    std::string content;
+    std::string reply;
+    Client* client_user;
+  };
+
+  struct Rate {
+    Rate(Client* _use, double _score);
+    double score;
+    Client* user;
+  };
 
   double getPrice();
   int getId();
@@ -36,6 +34,9 @@ public:
   double getRate();
   int getYear();
   std::string getDirector();
+  bool isRemoved();
+  Publisher* getPublisher();
+  // inline Publisher* getPublisher();
 
   void editName(std::string _name);
   void editYear(int _year);
@@ -47,9 +48,13 @@ public:
   void addComment(const std::string& _content, Client* _user);
   void addReply(const std::string& _content, int _comment_id);
   void addRate(double _score, Client* purchaser);
+  void deleteComment(int _comment_id);
 
+  friend std::ostream& operator<<(std::ostream& out, const Film* film);
   void printDetails() const;
-  void printComments() const;
+  void printAsRecommendation() const;
+
+  void remove();
 
 private:
   int film_id;
@@ -64,11 +69,16 @@ private:
   std::vector<Comment> comments;
   std::vector<Rate> rates;
   double mean_rate;
+  bool is_deleted;
+  int comment_id_tracker;
 
-  int searchForComment(int _comment_id);
+  int searchForComment(int id) const;
   bool isPurchaser(Client* purchaser);
   void calculateMeanRate();
+  void printComments() const;
 
 };
+
+// #include "Film-inl.h"
 
 #endif

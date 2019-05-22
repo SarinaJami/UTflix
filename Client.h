@@ -2,12 +2,10 @@
 #define CLIENT_H_
 
 #include "Film.h"
-#include "Exception.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <utility>
-#include <iterator>
 
 class Film;
 class Publisher;
@@ -19,6 +17,8 @@ public:
 
   virtual const std::string& getUsername() const;
   virtual const std::string& getPassword() const;
+  virtual int getId() const;
+  virtual double getMoney() const;
   virtual const std::vector<Film*>& getPurchasedFilms() const;
 
   virtual void follow(Publisher* publisher);
@@ -29,6 +29,9 @@ public:
   virtual void addNotification(std::string notif, bool is_seen);
   virtual void viewUnseenNotifications() const;
   virtual void viewAllNotifications(int limit) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const Client* user);
+  // bool operator==(const Client& user) const;
 
 protected:
   int user_id;
@@ -44,7 +47,7 @@ protected:
   std::vector<Film*> filterFilms(std::string name, double price,
     int min_year, int max_year, std::string director);
   void printFilms(const std::vector<Film*>& films_list) const;
-  bool isEnoughMoney(Film* film) const;
+  void pay(Film* film);
 
 };
 

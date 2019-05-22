@@ -4,15 +4,15 @@ using namespace std;
 
 const char* NotFound::what() const noexcept
 {
-  cout << "Not Found" << endl;
+  return "Not Found";
 }
 
 const char* BadRequest::what() const noexcept
 {
-  cout << "Bad Request" << endl;
+  return "Bad Request";
 }
 
 const char* PermissionDenied::what() const noexcept
 {
-  cout << "Permission Denied" << endl;
+  return "Permission Denied";
 }
