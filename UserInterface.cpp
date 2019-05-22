@@ -157,7 +157,7 @@ void UserInterface::processGet(const vector<string>& request)
   {
     if (question_mark == "?" || question_mark.empty())
     {
-      string film_id = findKeyWord(request, "film_id");
+      string film_id = findOptionalKeyWord(request, "film_id");
       if (film_id.empty())
         showAllFilms(request);
       else
