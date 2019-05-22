@@ -56,7 +56,12 @@ double Publisher::getPayment() const
   return payment;
 }
 
-vector<Film*> Publisher::getPublishedFilms()
+vector<Film*> Publisher::getPublishedFilms() const
 {
   return published_films;
+}
+
+vector<Client*> Publisher::getFollowers() const
+{
+  return followers;
 }

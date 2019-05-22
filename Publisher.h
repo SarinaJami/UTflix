@@ -15,7 +15,8 @@ public:
   void addPayment(double _payment);
   void receivePayment();
   double getPayment() const;
-  std::vector<Film*> getPublishedFilms();
+  std::vector<Film*> getPublishedFilms() const;
+  std::vector<Client*> getFollowers() const;
 
 private:
   std::vector<Film*> published_films;

@@ -42,8 +42,6 @@ void Film::addComment(const string& _content, Client* purchaser)
 void Film::addReply(const std::string& _content, int _comment_id)
 {
   comments[searchForComment(_comment_id)].reply.push_back(_content);
-
-  // inform purchaser
 }
 
 void Film::addRate(double _score, Client* purchaser)
@@ -225,4 +223,9 @@ bool Film::isRemoved()
 Publisher* Film::getPublisher()
 {
   return publisher;
+}
+
+Client* Film::getCommenter(int _comment_id) const
+{
+  return comments[searchForComment(_comment_id)].client_user;
 }

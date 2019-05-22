@@ -95,6 +95,8 @@ void UTflix::publishFilm(string name, int year, double length, double price, str
     director, logged_publisher);
   logged_publisher->addFilm(film);
   films.push_back(film);
+
+  notifyFollowers();
 }
 
 void UTflix::editFilm(int film_id, string feature, string content)
@@ -260,6 +262,7 @@ void UTflix::replyComment(int film_id, int comment_id, string content)
     throw NotFound();
 
   films[film_id - 1]->addReply(content, comment_id);
+  notifyUser(REPLY, films[film_id - 1]->getCommenter(comment_id));
 }
 
 void UTflix::deleteComment(int film_id, int comment_id)
@@ -290,6 +293,8 @@ void UTflix::followPublisher(int user_id)
   int index = searchForPublisher(user_id);
   logged_client->follow(publishers[index]);
   publishers[index]->addFollower(logged_client);
+
+  notifyUser(FOLLOW, publishers[index]);
 }
 
 void UTflix::addCredit(int amount)
@@ -386,6 +391,8 @@ void UTflix::buyFilm(int film_id)
   films[film_id - 1]->addPurchaser(logged_client);
   receiveMoney(film_id);
   calculatePublisherShare(film_id);
+
+  notifyUser(BUY, films[film_id - 1]->getPublisher(), film_id);
 }
 
 void UTflix::receiveMoney(int film_id)
@@ -430,7 +437,8 @@ void UTflix::rateFilm(int film_id, double score)
     throw NotFound();
 
   films[film_id - 1]->addRate(score, logged_client);
-  // send notifications to publisher
+
+  notifyUser(RATE, films[film_id - 1]->getPublisher(), film_id);
 }
 
 void UTflix::addComment(int film_id, string content)
@@ -441,6 +449,8 @@ void UTflix::addComment(int film_id, string content)
     throw NotFound();
 
   films[film_id - 1]->addComment(content, logged_client);
+
+  notifyUser(COMMENT, films[film_id - 1]->getPublisher(), film_id);
 }
 
 void UTflix::printPurchasedFilms(string name, double price, int min_year, int
@@ -466,4 +476,64 @@ void UTflix::printAllNotifications(int limit) const
     throw PermissionDenied();
 
   logged_client->printAllNotifications(limit);
+}
+
+void UTflix::notifyUser(NOTIFICATION_TYPE type, Client* user, int film_id) const
+{
+  string user_identifier = setUserIdentifier();
+  string notification;
+  string film_identifier;
+
+  bool seen = false;
+  if (user == logged_client)
+    seen = true;
+
+  switch(type) {
+    case REPLY:
+      notification = "Publisher " + user_identifier + " reply to your comment";
+      break;
+    case PUBLISH:
+      notification = "Publisher " + user_identifier + " register new film";
+      break;
+    case FOLLOW:
+      notification = "User " + user_identifier + " follow you";
+      break;
+    case BUY:
+      film_identifier = setFilmIdentifier(film_id);
+      notification = "User " + user_identifier + " buy your film " +
+        film_identifier + ".";
+      break;
+    case RATE:
+      film_identifier = setFilmIdentifier(film_id);
+      notification = "User " + user_identifier + " rate your film " +
+        film_identifier + ".";
+      break;
+    case COMMENT:
+      film_identifier = setFilmIdentifier(film_id);
+      notification = "User " + user_identifier + " comment on your film " +
+        film_identifier + ".";
+      break;
+  }
+  user->setNotification(notification, seen);
+}
+
+string UTflix::setUserIdentifier() const
+{
+  string user_name = logged_client->getUsername();
+  string user_id = to_string(logged_client->getId());
+  return (user_name + " with id " + user_id);
+}
+
+string UTflix::setFilmIdentifier(int film_id) const
+{
+  string name = films[film_id - 1]->getName();
+  string id = to_string(films[film_id - 1]->getId());
+  return (name + " with id " + id);
+}
+
+void UTflix::notifyFollowers() const
+{
+  vector<Client*> followers = logged_publisher->getFollowers();
+  for (int i = 0; i < followers.size(); ++i)
+    notifyUser(PUBLISH, followers[i]);
 }

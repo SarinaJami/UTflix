@@ -39,6 +39,15 @@ public:
   void printUnseenNotifications() const;
   void printAllNotifications(int limit) const;
 
+  enum NOTIFICATION_TYPE {
+    REPLY,
+    PUBLISH,
+    FOLLOW,
+    BUY,
+    RATE,
+    COMMENT
+  };
+
 private:
   std::vector<Client*> clients;
   std::vector<Publisher*> publishers;
@@ -77,6 +86,10 @@ private:
   void receiveMoney(int film_id);
   void calculatePublisherShare(int film_id);
   void updateMoney();
+  void notifyUser(NOTIFICATION_TYPE type, Client* user, int film_id = 0) const;
+  void notifyFollowers() const;
+  std::string setFilmIdentifier(int film_id) const;
+  std::string setUserIdentifier() const;
 
 };
 

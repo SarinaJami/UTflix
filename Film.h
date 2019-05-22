@@ -36,7 +36,7 @@ public:
   std::string getDirector();
   bool isRemoved();
   Publisher* getPublisher();
-  // inline Publisher* getPublisher();
+  Client* getCommenter(int _comment_id) const;
 
   void editName(std::string _name);
   void editYear(int _year);
@@ -49,6 +49,7 @@ public:
   void addReply(const std::string& _content, int _comment_id);
   void addRate(double _score, Client* purchaser);
   void deleteComment(int _comment_id);
+  bool isPurchaser(Client* purchaser);
 
   friend std::ostream& operator<<(std::ostream& out, const Film* film);
   void printDetails() const;
@@ -73,7 +74,6 @@ private:
   int comment_id_tracker;
 
   int searchForComment(int id) const;
-  bool isPurchaser(Client* purchaser);
   void calculateMeanRate();
   void printComments() const;
 
