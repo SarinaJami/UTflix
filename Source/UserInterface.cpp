@@ -150,8 +150,6 @@ void UserInterface::processGet(const vector<string>& request) const
   {
     if (question_mark == "?" || question_mark.empty())
       showPublisherFilms(request);
-    else
-      NotFound();
   }
   else if (instruction == "films")
   {
@@ -163,8 +161,6 @@ void UserInterface::processGet(const vector<string>& request) const
       else
         utflix->showFilmDetails(stoi(film_id));
     }
-    else
-      throw BadRequest();
   }
   else if (instruction == "purchased")
     showPurchasedFilms(request);
@@ -208,6 +204,9 @@ void UserInterface::showAllNotifications(const vector<string>& request) const
 
 void UserInterface::showPurchasedFilms(const vector<string>& request) const
 {
+  if (find(request.begin(), request.end(), "?") == request.end())
+    return;
+
   vector<string> filmInfo = getPurchasedFilmsInfo(request);
 
   int min_year = -1;
