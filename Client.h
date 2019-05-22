@@ -29,9 +29,11 @@ public:
   virtual void addNotification(std::string notif, bool is_seen);
   virtual void viewUnseenNotifications() const;
   virtual void viewAllNotifications(int limit) const;
+  virtual void setNotification(std::string content, bool seen);
+  virtual void printUnseenNotifications() const;
+  virtual void printAllNotifications(int limit) const;
 
   friend std::ostream& operator<<(std::ostream& out, const Client* user);
-  // bool operator==(const Client& user) const;
 
 protected:
   int user_id;

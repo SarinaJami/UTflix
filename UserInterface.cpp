@@ -168,6 +168,13 @@ void UserInterface::processGet(const vector<string>& request)
   }
   else if (instruction == "purchased")
     showPurchasedFilms(request);
+  else if (instruction == "notifications")
+  {
+    if (question_mark.empty())
+      utflix->printUnseenNotifications();
+    else
+      showAllNotifications(request);
+  }
   else
     BadRequest();
 }
@@ -188,6 +195,15 @@ void UserInterface::processDelete(const vector<string>& request)
   }
   else
     BadRequest();
+}
+
+void UserInterface::showAllNotifications(const vector<string>& request)
+{
+  if (find(request.begin(), request.end(), "read") == request.end() ||
+    find(request.begin(), request.end(), "?") == request.end())
+    return;
+  int limit = stoi(findKeyWord(request, "limit"));
+  utflix->printAllNotifications(limit);
 }
 
 void UserInterface::showPurchasedFilms(const vector<string>& request)

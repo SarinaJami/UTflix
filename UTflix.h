@@ -36,6 +36,8 @@ public:
   void addComment(int film_id, std::string content);
   void printPurchasedFilms(std::string name, double price, int min_year, int max_year,
     std::string director) const;
+  void printUnseenNotifications() const;
+  void printAllNotifications(int limit) const;
 
 private:
   std::vector<Client*> clients;

@@ -48,6 +48,7 @@ private:
     director);
   void showPurchasedFilms(const std::vector<std::string>& request);
   std::vector<std::string> getPurchasedFilmsInfo(const std::vector<std::string>& request);
+  void showAllNotifications(const std::vector<std::string>& request);
   void printSuccessMessage();
 
 };

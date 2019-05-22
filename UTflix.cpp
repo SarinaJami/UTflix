@@ -451,3 +451,19 @@ void UTflix::printPurchasedFilms(string name, double price, int min_year, int
 
   logged_client->viewPurchasedFilms(name, price, min_year, max_year, director);
 }
+
+void UTflix::printUnseenNotifications() const
+{
+  if (!isUserLogged())
+    throw PermissionDenied();
+
+  logged_client->printUnseenNotifications();
+}
+
+void UTflix::printAllNotifications(int limit) const
+{
+  if (!isUserLogged())
+    throw PermissionDenied();
+
+  logged_client->printAllNotifications(limit);
+}

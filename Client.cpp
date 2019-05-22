@@ -135,12 +135,30 @@ ostream& operator<<(ostream& out, const Client* user)
   return out;
 }
 
-// bool operator==(const Client& user) const
-// {
-//   if (username == user.username && password == user.password)
-//     return true;
-//   return false;
-// }
+void Client::printUnseenNotifications() const
+{
+  int count = 0;
+  for (int i = notifications.size() - 1; i >= 0 ; --i)
+    if (notifications[i].second == false)
+      cout << ++count << ". " << notifications[i].first << endl;
+}
+
+void Client::printAllNotifications(int limit) const
+{
+  if (limit < notifications.size())
+    limit = notifications.size() - limit;
+  else
+    limit = 0;
+
+  int count = 0;
+  for (int i = notifications.size() - 1; i >= limit ; --i)
+      cout << ++count << ". " << notifications[i].first << endl;
+}
+
+void Client::setNotification(std::string content, bool seen)
+{
+  notifications.push_back(make_pair(content, seen));
+}
 
 const string& Client::getUsername() const
 {
