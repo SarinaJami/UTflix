@@ -68,8 +68,9 @@ private:
     std::string director) const;
   int searchForPublisher(int user_id) const;
   void printFilms(const std::vector<Film*>& filtered_films) const;
-  void printRecommendations() const;
-  std::vector<Film*> sortTopfilms() const;
+  void printRecommendations(int film_id) const;
+  std::vector<Film*> omitWatchedFilms(int film_id) const;
+  void sortTopFilms(std::vector<Film*>& sorted_films) const;
   void swap(Film*& a, Film*& b) const;
   void receiveMoney(int film_id);
   void calculatePublisherShare(int film_id);

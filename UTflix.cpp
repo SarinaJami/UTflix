@@ -319,12 +319,11 @@ void UTflix::showFilmDetails(int film_id) const
     throw PermissionDenied();
 
   films[film_id - 1]->printDetails();
-  printRecommendations();
+  printRecommendations(film_id);
 }
 
-vector<Film*> UTflix::sortTopfilms() const
+void UTflix::sortTopFilms(vector<Film*>& sorted_films) const
 {
-  vector<Film*> sorted_films = films;
   for (int i = 0; i < sorted_films.size(); ++i)
   {
     for (int j = 0; j < sorted_films.size(); ++j)
@@ -333,7 +332,6 @@ vector<Film*> UTflix::sortTopfilms() const
         swap(sorted_films[i], sorted_films[j]);
     }
   }
-  return sorted_films;
 }
 
 void UTflix::swap(Film*& a, Film*& b) const
@@ -343,10 +341,26 @@ void UTflix::swap(Film*& a, Film*& b) const
   b = temp;
 }
 
-void UTflix::printRecommendations() const
+vector<Film*> UTflix::omitWatchedFilms(int film_id) const
+{
+  vector<Film*> new_films;
+  for (int i = 0; i < films.size(); ++i)
+  {
+    if (films[i]->isPurchaser(logged_client) || films[i]->isRemoved())
+      break;
+    if (i != film_id - 1)
+      new_films.push_back(films[i]);
+  }
+  return new_films;
+}
+
+void UTflix::printRecommendations(int film_id) const
 {
   cout << "Recommendation Film" << endl;
-  vector<Film*> top_films = sortTopfilms();
+
+  vector<Film*> top_films = omitWatchedFilms(film_id);
+  sortTopFilms(top_films);
+
   int count = 0;
   while (count < top_films.size() && count < 4)
   {
