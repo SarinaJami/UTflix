@@ -15,9 +15,7 @@ UTflix::UTflix() : user_id_tracker(0), film_id_tracker(0), money(0),
 void UTflix::signUp(string email, string username, string password, int age,
   bool is_publisher)
 {
-  if (isUser(username, password))
-    throw BadRequest();
-  if (isEmailValid(email))
+  if (!isUser(username, password) && isEmailValid(email))
   {
     ++user_id_tracker;
     if (is_publisher)
@@ -36,6 +34,8 @@ void UTflix::signUp(string email, string username, string password, int age,
       logged_publisher = NULL;
     }
   }
+  else
+    throw BadRequest();
 }
 
 void UTflix::login(string username, string password)
@@ -60,7 +60,7 @@ void UTflix::login(string username, string password)
   }
   throw BadRequest();
 }
-// similar to function above
+
 bool UTflix::isUser(string username, string password) const
 {
   for (int i = 0; i < publishers.size(); ++i)
@@ -103,10 +103,10 @@ void UTflix::editFilm(int film_id, string feature, string content)
 {
   if (!isUserLogged() || logged_publisher == NULL)
     throw PermissionDenied();
-  if (!logged_publisher->ownsTheFilm(film_id))
-    throw PermissionDenied();
   if (!isArchiveFilm(film_id))
     throw NotFound();
+  if (!logged_publisher->ownsTheFilm(film_id))
+    throw PermissionDenied();
 
   if (feature == "name")
     films[film_id - 1]->editName(content);
@@ -126,10 +126,10 @@ void UTflix::deleteFilm(int film_id)
 {
   if (!isUserLogged() || logged_publisher == NULL)
     throw PermissionDenied();
-  if (!logged_publisher->ownsTheFilm(film_id))
-    throw PermissionDenied();
   if (!isArchiveFilm(film_id))
     throw NotFound();
+  if (!logged_publisher->ownsTheFilm(film_id))
+    throw PermissionDenied();
 
   films[film_id - 1]->remove();
   logged_publisher->removeFilm(film_id);
@@ -167,6 +167,8 @@ void UTflix::printPublisherFilms(string name, double min_rate, int min_year,
 void UTflix::printFilms(const vector<Film*>& filtered_films) const
 {
   int count = 0;
+  cout << "#. Film Id | Film Name | Film Length | Film price | " <<
+  "Rate | Production Year | Film Director" << endl;
   for (int i = 0; i < filtered_films.size(); ++i)
     cout << ++count << ". " << filtered_films[i] << endl;
 }
@@ -256,10 +258,10 @@ void UTflix::replyComment(int film_id, int comment_id, string content)
 {
   if (!isUserLogged() || logged_publisher == NULL)
     throw PermissionDenied();
-  if (!logged_publisher->ownsTheFilm(film_id))
-    throw PermissionDenied();
   if (!isArchiveFilm(film_id))
     throw NotFound();
+  if (!logged_publisher->ownsTheFilm(film_id))
+    throw PermissionDenied();
 
   films[film_id - 1]->addReply(content, comment_id);
   notifyUser(REPLY, films[film_id - 1]->getCommenter(comment_id));
@@ -269,10 +271,10 @@ void UTflix::deleteComment(int film_id, int comment_id)
 {
   if (!isUserLogged() || logged_publisher == NULL)
     throw PermissionDenied();
-  if (!logged_publisher->ownsTheFilm(film_id))
-    throw PermissionDenied();
   if (!isArchiveFilm(film_id))
     throw NotFound();
+  if (!logged_publisher->ownsTheFilm(film_id))
+    throw PermissionDenied();
 
   films[film_id - 1]->deleteComment(comment_id);
 }
@@ -282,7 +284,7 @@ int UTflix::searchForPublisher(int user_id) const
   for (int i = 0; i < publishers.size(); ++i)
     if (publishers[i]->getId() == user_id)
       return i;
-  throw PermissionDenied();
+  throw NotFound();
 }
 
 void UTflix::followPublisher(int user_id)
@@ -336,7 +338,7 @@ void UTflix::sortTopFilms(vector<Film*>& sorted_films) const
 {
   for (int i = 0; i < sorted_films.size(); ++i)
   {
-    for (int j = 0; j < sorted_films.size(); ++j)
+    for (int j = i; j < sorted_films.size(); ++j)
     {
       if (sorted_films[i]->getRate() >= sorted_films[j]->getRate())
         swap(sorted_films[i], sorted_films[j]);
@@ -357,7 +359,7 @@ vector<Film*> UTflix::omitWatchedFilms(int film_id) const
   for (int i = 0; i < films.size(); ++i)
   {
     if (films[i]->isPurchaser(logged_client) || films[i]->isRemoved())
-      break;
+      continue;
     if (i != film_id - 1)
       new_films.push_back(films[i]);
   }
@@ -366,12 +368,12 @@ vector<Film*> UTflix::omitWatchedFilms(int film_id) const
 
 void UTflix::printRecommendations(int film_id) const
 {
-  cout << "Recommendation Film" << endl;
-
   vector<Film*> top_films = omitWatchedFilms(film_id);
   sortTopFilms(top_films);
 
   int count = 0;
+  cout << "Recommendation Film" << endl;
+  cout << "#. Film Id | Film Name | Film Length | Film Director" << endl;
   while (count < top_films.size() && count < 4)
   {
     cout << ++count << ". ";
@@ -490,13 +492,13 @@ void UTflix::notifyUser(NOTIFICATION_TYPE type, Client* user, int film_id) const
 
   switch(type) {
     case REPLY:
-      notification = "Publisher " + user_identifier + " reply to your comment";
+      notification = "Publisher " + user_identifier + " reply to your comment.";
       break;
     case PUBLISH:
-      notification = "Publisher " + user_identifier + " register new film";
+      notification = "Publisher " + user_identifier + " register new film.";
       break;
     case FOLLOW:
-      notification = "User " + user_identifier + " follow you";
+      notification = "User " + user_identifier + " follow you.";
       break;
     case BUY:
       film_identifier = setFilmIdentifier(film_id);

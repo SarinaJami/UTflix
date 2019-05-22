@@ -34,36 +34,21 @@ void Client::pay(Film* film)
 }
 
 void Client::viewPurchasedFilms(string name, double price, int min_year,
-  int max_year, string director)
+  int max_year, string director) const
 {
   vector<Film*> filtered_films = filterFilms(name, price, min_year, max_year,
     director);
-  printFilms(filtered_films);
 
-}
+  cout << "#. Film Id | Film Name | Film Length | Film price | " <<
+    "Rate | Production Year | Film Director" << endl;
+  for (int i = 0;i < filtered_films.size(); ++i)
+    filtered_films[i]->printPurchasedFilm(i + 1);
 
-void Client::printFilms(const vector<Film*>& films_list) const
-{
-  // thinking of istringstream...
-  int count = 0;
-  for (int i = 0; i < films_list.size(); ++i)
-  {
-    cout << ++count << ". " <<
-    films_list[i]->getId() << " | " <<
-    films_list[i]->getName() << " | " <<
-    films_list[i]->getLength() << " | " <<
-    films_list[i]->getPrice() << " | " <<
-    films_list[i]->getRate() << " | " <<
-    films_list[i]->getYear() << " | " <<
-    films_list[i]->getDirector() << " | " <<
-    endl;
-  }
 }
 
 vector<Film*> Client::filterFilms(string name, double price, int min_year,
-  int max_year, string director)
+  int max_year, string director) const
 {
-  // thinking of a better way...
   vector<Film*> filtered_films;
   bool name_filtered = true;
   bool price_filtered = true;
@@ -101,31 +86,6 @@ void Client::addNotification(string notif, bool is_seen)
   notifications.push_back(make_pair(notif, is_seen));
 }
 
-void Client::viewUnseenNotifications() const
-{
-  int count = 0;
-  // how to iterate?
-  auto it_notif = notifications.end();
-  while (it_notif >= notifications.begin())
-  {
-    if ((*it_notif).second == false)
-      cout << ++count << ". " << (*it_notif).first << endl;
-    --it_notif;
-  }
-}
-
-void Client::viewAllNotifications(int limit) const
-{
-  int count = 0;
-  // how to iterate?
-  auto it_notif = notifications.end();
-  while (it_notif >= (notifications.begin() + limit))
-  {
-    cout << ++count << ". " << (*it_notif).first << endl;
-    --it_notif;
-  }
-}
-
 ostream& operator<<(ostream& out, const Client* user)
 {
   out << user->user_id << " | " <<
@@ -135,16 +95,23 @@ ostream& operator<<(ostream& out, const Client* user)
   return out;
 }
 
-void Client::printUnseenNotifications() const
+void Client::printUnseenNotifications()
 {
+  cout << "#. Notification Message" << endl;
   int count = 0;
   for (int i = notifications.size() - 1; i >= 0 ; --i)
+  {
     if (notifications[i].second == false)
+    {
       cout << ++count << ". " << notifications[i].first << endl;
+      notifications[i].second = true;
+    }
+  }
 }
 
 void Client::printAllNotifications(int limit) const
 {
+  cout << "#. Notification Message" << endl;
   if (limit < notifications.size())
     limit = notifications.size() - limit;
   else
@@ -173,14 +140,4 @@ const string& Client::getPassword() const
 int Client::getId() const
 {
   return user_id;
-}
-
-double Client::getMoney() const
-{
-  return money;
-}
-
-const vector<Film*>& Client::getPurchasedFilms() const
-{
-  return purchased_films;
 }

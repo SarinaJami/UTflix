@@ -35,6 +35,7 @@ bool Publisher::ownsTheFilm(int film_id) const
 void Publisher::printFollowers() const
 {
   cout << "List of Followers" << endl;
+  cout << "#. User Id | User Username | User Email" << endl;
   int count = 0;
   for (int i = 0; i < followers.size(); ++i)
     cout << ++count << ". " << followers[i] << endl;

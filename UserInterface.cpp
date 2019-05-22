@@ -19,7 +19,7 @@ UserInterface::UserInterface(UTflix* _utflix) : utflix(_utflix)
 {
 }
 
-vector<string> UserInterface::parseInput(const string& cmd)
+vector<string> UserInterface::parseInput(const string& cmd) const
 {
   istringstream ss(cmd);
   string buf;
@@ -29,7 +29,7 @@ vector<string> UserInterface::parseInput(const string& cmd)
   return tokens;
 }
 
-void UserInterface::signup(const vector<string>& request)
+void UserInterface::signup(const vector<string>& request) const
 {
   vector<string> signupInfo = getSignupInfo(request);
 
@@ -41,13 +41,13 @@ void UserInterface::signup(const vector<string>& request)
     stoi(signupInfo[3]), is_publisher);
 }
 
-void UserInterface::login(const vector<string>& request)
+void UserInterface::login(const vector<string>& request) const
 {
   vector<string> loginInfo = getLoginInfo(request);
   utflix->login(loginInfo[0], loginInfo[1]);
 }
 
-void UserInterface::processRequest(const string& cmd)
+void UserInterface::processRequest(const string& cmd) const
 {
   vector<string> request = parseInput(cmd);
   auto request_type = request.begin();
@@ -63,7 +63,7 @@ void UserInterface::processRequest(const string& cmd)
     throw BadRequest();
 }
 
-void UserInterface::processPost(const vector<string>& request)
+void UserInterface::processPost(const vector<string>& request) const
 {
   string instruction = (request.size() > 1) ? request[1] : "";
   string question_mark = (request.size() > 2) ? request[2] : "";
@@ -123,10 +123,10 @@ void UserInterface::processPost(const vector<string>& request)
     printSuccessMessage();
   }
   else
-    BadRequest();
+    throw NotFound();
 }
 
-void UserInterface::processPut(const vector<string>& request)
+void UserInterface::processPut(const vector<string>& request) const
 {
   string instruction = (request.size() > 1) ? request[1] : "";
   string question_mark = (request.size() > 2) ? request[2] : "";
@@ -136,10 +136,10 @@ void UserInterface::processPut(const vector<string>& request)
     printSuccessMessage();
   }
   else
-    BadRequest();
+    throw NotFound();
 }
 
-void UserInterface::processGet(const vector<string>& request)
+void UserInterface::processGet(const vector<string>& request) const
 {
   string instruction = (request.size() > 1) ? request[1] : "";
   string question_mark = (request.size() > 2) ? request[2] : "";
@@ -151,7 +151,7 @@ void UserInterface::processGet(const vector<string>& request)
     if (question_mark == "?" || question_mark.empty())
       showPublisherFilms(request);
     else
-      throw BadRequest();
+      NotFound();
   }
   else if (instruction == "films")
   {
@@ -176,10 +176,10 @@ void UserInterface::processGet(const vector<string>& request)
       showAllNotifications(request);
   }
   else
-    BadRequest();
+    throw NotFound();
 }
 
-void UserInterface::processDelete(const vector<string>& request)
+void UserInterface::processDelete(const vector<string>& request) const
 {
   string instruction = (request.size() > 1) ? request[1] : "";
   string question_mark = (request.size() > 2) ? request[2] : "";
@@ -194,10 +194,10 @@ void UserInterface::processDelete(const vector<string>& request)
     printSuccessMessage();
   }
   else
-    BadRequest();
+    throw NotFound();
 }
 
-void UserInterface::showAllNotifications(const vector<string>& request)
+void UserInterface::showAllNotifications(const vector<string>& request) const
 {
   if (find(request.begin(), request.end(), "read") == request.end() ||
     find(request.begin(), request.end(), "?") == request.end())
@@ -206,7 +206,7 @@ void UserInterface::showAllNotifications(const vector<string>& request)
   utflix->printAllNotifications(limit);
 }
 
-void UserInterface::showPurchasedFilms(const vector<string>& request)
+void UserInterface::showPurchasedFilms(const vector<string>& request) const
 {
   vector<string> filmInfo = getPurchasedFilmsInfo(request);
 
@@ -223,7 +223,7 @@ void UserInterface::showPurchasedFilms(const vector<string>& request)
   utflix->printPurchasedFilms(filmInfo[0], price, min_year, max_year, filmInfo[4]);
 }
 
-vector<string> UserInterface::getPurchasedFilmsInfo(const vector<string>& request)
+vector<string> UserInterface::getPurchasedFilmsInfo(const vector<string>& request) const
 {
   vector<string> filmInfo;
 
@@ -236,7 +236,7 @@ vector<string> UserInterface::getPurchasedFilmsInfo(const vector<string>& reques
   return filmInfo;
 }
 
-void UserInterface::showAllFilms(const vector<string>& request)
+void UserInterface::showAllFilms(const vector<string>& request) const
 {
   double min_rate = -1;
   int min_year = -1;
@@ -248,7 +248,7 @@ void UserInterface::showAllFilms(const vector<string>& request)
   utflix->printAllFilms(name, min_rate, min_year, price, max_year, director);
 }
 
-void UserInterface::reply(const vector<string>& request)
+void UserInterface::reply(const vector<string>& request) const
 {
   int film_id = stoi(findKeyWord(request, "film_id"));
   int comment_id = stoi(findKeyWord(request, "comment_id"));
@@ -256,14 +256,14 @@ void UserInterface::reply(const vector<string>& request)
   utflix->replyComment(film_id, comment_id, content);
 }
 
-void UserInterface::deleteComment(const std::vector<std::string>& request)
+void UserInterface::deleteComment(const std::vector<std::string>& request) const
 {
   int film_id = stoi(findKeyWord(request, "film_id"));
   int comment_id = stoi(findKeyWord(request, "comment_id"));
   utflix->deleteComment(film_id, comment_id);
 }
 
-void UserInterface::showPublisherFilms(const vector<string>& request)
+void UserInterface::showPublisherFilms(const vector<string>& request) const
 {
   double min_rate = -1;
   int min_year = -1;
@@ -277,7 +277,7 @@ void UserInterface::showPublisherFilms(const vector<string>& request)
 }
 
 void UserInterface::convertFilmInfo(const vector<string>& filmInfo, double& min_rate, int&
-  min_year, double& price, int& max_year)
+  min_year, double& price, int& max_year) const
 {
   if (!filmInfo[0].empty())
     min_rate = stod(filmInfo[0]);
@@ -289,13 +289,13 @@ void UserInterface::convertFilmInfo(const vector<string>& filmInfo, double& min_
     max_year = stoi(filmInfo[3]);
 }
 
-void UserInterface::deleteFilm(const vector<string>& request)
+void UserInterface::deleteFilm(const vector<string>& request) const
 {
   int film_id = stoi(findKeyWord(request, "film_id"));
   utflix->deleteFilm(film_id);
 }
 
-void UserInterface::publishFilm(const vector<string>& request)
+void UserInterface::publishFilm(const vector<string>& request) const
 {
   vector<string> filmInfo = getFilmInfoForPublish(request);
   utflix->publishFilm(filmInfo[0], stoi(filmInfo[1]), stod(filmInfo[2]),
@@ -304,7 +304,7 @@ void UserInterface::publishFilm(const vector<string>& request)
 
 void UserInterface::getFilmInfoForPrint(const vector<string>& request, string&
   name, double& min_rate, int& min_year, double& price, int& max_year, string&
-  director)
+  director) const
 {
   vector<string> filmInfo;
 
@@ -317,7 +317,7 @@ void UserInterface::getFilmInfoForPrint(const vector<string>& request, string&
   convertFilmInfo(filmInfo, min_rate, min_year, price, max_year);
 }
 
-vector<string> UserInterface::getFilmInfoForPublish(const vector<string>& request)
+vector<string> UserInterface::getFilmInfoForPublish(const vector<string>& request) const
 {
   vector<string> filmInfo;
   filmInfo.push_back(findKeyWord(request, "name"));
@@ -329,7 +329,7 @@ vector<string> UserInterface::getFilmInfoForPublish(const vector<string>& reques
   return filmInfo;
 }
 
-void UserInterface::editFilm(const vector<string>& request)
+void UserInterface::editFilm(const vector<string>& request) const
 {
   int film_id = stoi(findKeyWord(request, "film_id"));
   editFeature(film_id, "name", findOptionalKeyWord(request, "name"));
@@ -339,13 +339,13 @@ void UserInterface::editFilm(const vector<string>& request)
   editFeature(film_id, "director", findOptionalKeyWord(request, "director"));
 }
 
-void UserInterface::editFeature(int film_id, string feature, string content)
+void UserInterface::editFeature(int film_id, string feature, string content) const
 {
   if (!content.empty())
     utflix->editFilm(film_id, feature, content);
 }
 
-vector<string> UserInterface::getSignupInfo(const vector<string>& request)
+vector<string> UserInterface::getSignupInfo(const vector<string>& request) const
 {
   vector<string> signupInfo;
   signupInfo.push_back(findKeyWord(request, "email"));
@@ -358,7 +358,7 @@ vector<string> UserInterface::getSignupInfo(const vector<string>& request)
   return signupInfo;
 }
 
-vector<string> UserInterface::getLoginInfo(const vector<string>& request)
+vector<string> UserInterface::getLoginInfo(const vector<string>& request) const
 {
   vector<string> loginInfo;
   loginInfo.push_back(findKeyWord(request, "username"));
@@ -366,17 +366,16 @@ vector<string> UserInterface::getLoginInfo(const vector<string>& request)
   return loginInfo;
 }
 
-string UserInterface::findKeyWord(const vector<string>& request, string word)
+string UserInterface::findKeyWord(const vector<string>& request, string word) const
 {
   auto it_to_word = find(request.begin(), request.end(), word);
   if (it_to_word == request.end())
     throw BadRequest();
-  // check if the keyword has value
   return *(++it_to_word);
 }
 
 string UserInterface::findOptionalKeyWord(const vector<string>& request, string
-  word)
+  word) const
 {
   auto it_to_word = find(request.begin(), request.end(), word);
   if (it_to_word == request.end())
@@ -384,7 +383,7 @@ string UserInterface::findOptionalKeyWord(const vector<string>& request, string
   return (++it_to_word == request.end()) ? "" : *it_to_word;
 }
 
-void UserInterface::printSuccessMessage()
+void UserInterface::printSuccessMessage() const
 {
   cout << "OK" << endl;
 }

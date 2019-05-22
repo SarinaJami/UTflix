@@ -18,19 +18,15 @@ public:
   virtual const std::string& getUsername() const;
   virtual const std::string& getPassword() const;
   virtual int getId() const;
-  virtual double getMoney() const;
-  virtual const std::vector<Film*>& getPurchasedFilms() const;
 
   virtual void follow(Publisher* publisher);
   virtual void addCredit(double amount);
   virtual void buyFilm(Film* film);
   virtual void viewPurchasedFilms(std::string name, double price, int min_year,
-    int max_year, std::string director);
+    int max_year, std::string director) const;
   virtual void addNotification(std::string notif, bool is_seen);
-  virtual void viewUnseenNotifications() const;
-  virtual void viewAllNotifications(int limit) const;
   virtual void setNotification(std::string content, bool seen);
-  virtual void printUnseenNotifications() const;
+  virtual void printUnseenNotifications();
   virtual void printAllNotifications(int limit) const;
 
   friend std::ostream& operator<<(std::ostream& out, const Client* user);
@@ -47,8 +43,7 @@ protected:
   std::vector<Publisher*> followings;
 
   std::vector<Film*> filterFilms(std::string name, double price,
-    int min_year, int max_year, std::string director);
-  void printFilms(const std::vector<Film*>& films_list) const;
+    int min_year, int max_year, std::string director) const;
   void pay(Film* film);
 
 };

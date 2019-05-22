@@ -24,8 +24,6 @@ Film::Rate::Rate(Client* _user, double _score) : score(_score), user(_user)
 void Film::addPurchaser(Client* purchaser)
 {
   purchasers.push_back(purchaser);
-
-  // inform publisher
 }
 
 void Film::addComment(const string& _content, Client* purchaser)
@@ -35,8 +33,6 @@ void Film::addComment(const string& _content, Client* purchaser)
 
   Comment comment(++comment_id_tracker, purchaser, _content);
   comments.push_back(comment);
-
-  // inform publisher
 }
 
 void Film::addReply(const std::string& _content, int _comment_id)
@@ -89,7 +85,7 @@ void Film::calculateMeanRate()
   mean_rate = rate_sum / rates.size();
 }
 
-bool Film::isPurchaser(Client* purchaser)
+bool Film::isPurchaser(Client* purchaser) const
 {
   for (int i = 0; i < purchasers.size(); ++i)
   {
@@ -121,7 +117,7 @@ void Film::printDetails() const
   "Year = " << year << "\n" <<
   "Summary = " << summary << "\n" <<
   "Rate = " << mean_rate << "\n" <<
-  "Price = " << price << "\n\n" << endl;
+  "Price = " << price << "\n" << endl;
 
   printComments();
 }
@@ -139,7 +135,14 @@ void Film::printComments() const
       comments[i].reply[j] << endl;
     }
   }
-  cout << "\n" << endl;
+  cout << endl;
+}
+
+void Film::printPurchasedFilm(int count) const
+{
+  cout << count << ". " << film_id << " | " << name << " | " <<
+  length << " | " << price << " | " << mean_rate << " | " <<
+  year << " | " << director << endl;
 }
 
 void Film::printAsRecommendation() const
@@ -180,47 +183,42 @@ void Film::editDirector(std::string _director)
   director = _director;
 }
 
-double Film::getPrice()
+double Film::getPrice() const
 {
   return price;
 }
 
-int Film::getId()
+int Film::getId() const
 {
   return film_id;
 }
 
-string Film::getName()
+string Film::getName() const
 {
   return name;
 }
 
-double Film::getLength()
-{
-  return length;
-}
-
-double Film::getRate()
+double Film::getRate() const
 {
   return mean_rate;
 }
 
-int Film::getYear()
+int Film::getYear() const
 {
   return year;
 }
 
-string Film::getDirector()
+string Film::getDirector() const
 {
   return director;
 }
 
-bool Film::isRemoved()
+bool Film::isRemoved() const
 {
   return is_deleted;
 }
 
-Publisher* Film::getPublisher()
+Publisher* Film::getPublisher() const
 {
   return publisher;
 }

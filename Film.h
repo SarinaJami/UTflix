@@ -27,16 +27,16 @@ public:
     Client* user;
   };
 
-  double getPrice();
-  int getId();
-  std::string getName();
-  double getLength();
-  double getRate();
-  int getYear();
-  std::string getDirector();
-  bool isRemoved();
-  Publisher* getPublisher();
+  double getPrice() const;
+  int getId() const;
+  std::string getName() const;
+  double getRate() const;
+  int getYear() const;
+  std::string getDirector() const;
+  bool isRemoved() const;
+  Publisher* getPublisher() const;
   Client* getCommenter(int _comment_id) const;
+  bool isPurchaser(Client* purchaser) const;
 
   void editName(std::string _name);
   void editYear(int _year);
@@ -49,11 +49,11 @@ public:
   void addReply(const std::string& _content, int _comment_id);
   void addRate(double _score, Client* purchaser);
   void deleteComment(int _comment_id);
-  bool isPurchaser(Client* purchaser);
 
   friend std::ostream& operator<<(std::ostream& out, const Film* film);
   void printDetails() const;
   void printAsRecommendation() const;
+  void printPurchasedFilm(int count) const;
 
   void remove();
 
@@ -78,7 +78,5 @@ private:
   void printComments() const;
 
 };
-
-// #include "Film-inl.h"
 
 #endif
