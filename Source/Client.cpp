@@ -119,6 +119,7 @@ void Client::printAllNotifications(int limit) const
 
   int count = 0;
   for (int i = notifications.size() - 1; i >= limit ; --i)
+    if (notifications[i].second == true)
       cout << ++count << ". " << notifications[i].first << endl;
 }
 
