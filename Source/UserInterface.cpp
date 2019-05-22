@@ -1,5 +1,5 @@
-#include "UserInterface.h"
-#include "Exception.h"
+#include "../Include/UserInterface.h"
+#include "../Include/Exception.h"
 #include <iostream>
 #include <sstream>
 #include <iterator>
