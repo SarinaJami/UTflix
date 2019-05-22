@@ -308,6 +308,11 @@ void UTflix::printAllFilms(string name, double min_rate, int min_year, double pr
 
   vector<Film*> filtered_films = filterFilms(films, name, min_rate, min_year,
     price, max_year, director);
+
+  for (int i = 0; i < filtered_films.size(); ++i)
+    if (filtered_films[i]->isRemoved())
+      filtered_films.erase(filtered_films.begin() + i);
+
   printFilms(filtered_films);
 }
 
@@ -316,7 +321,7 @@ void UTflix::showFilmDetails(int film_id) const
   if (!isUserLogged())
     throw PermissionDenied();
   if (!isArchiveFilm(film_id))
-    throw PermissionDenied();
+    throw NotFound();
 
   films[film_id - 1]->printDetails();
   printRecommendations(film_id);
@@ -375,7 +380,7 @@ void UTflix::buyFilm(int film_id)
   if (!isUserLogged())
     throw PermissionDenied();
   if (!isArchiveFilm(film_id))
-    throw PermissionDenied();
+    throw NotFound();
 
   logged_client->buyFilm(films[film_id - 1]);
   films[film_id - 1]->addPurchaser(logged_client);
@@ -421,6 +426,8 @@ void UTflix::rateFilm(int film_id, double score)
 {
   if (!isUserLogged())
     throw PermissionDenied();
+  if (!isArchiveFilm(film_id))
+    throw NotFound();
 
   films[film_id - 1]->addRate(score, logged_client);
   // send notifications to publisher
