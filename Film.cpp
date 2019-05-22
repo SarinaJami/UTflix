@@ -41,7 +41,7 @@ void Film::addComment(const string& _content, Client* purchaser)
 
 void Film::addReply(const std::string& _content, int _comment_id)
 {
-  comments[searchForComment(_comment_id)].reply = _content;
+  comments[searchForComment(_comment_id)].reply.push_back(_content);
 
   // inform purchaser
 }
@@ -79,7 +79,7 @@ int Film::searchForComment(int id) const
   for (int i = 0; i < comments.size(); ++i)
     if (comments[i].comment_id == id)
       return i;
-      
+
   throw NotFound();
 }
 
@@ -133,8 +133,13 @@ void Film::printComments() const
   cout << "Comments" << endl;
   for (int i = 0; i < comments.size(); ++i)
   {
-    cout << comments[i].comment_id << ". " << comments[i].content << "\n" <<
-    comments[i].comment_id << ".1. " << comments[i].reply << endl;
+    int count = comments[i].reply.size();
+    cout << comments[i].comment_id << ". " << comments[i].content << endl;
+    for (int j = 0; j < comments[i].reply.size(); ++j)
+    {
+      cout << comments[i].comment_id << "." << j + 1 << ". " <<
+      comments[i].reply[j] << endl;
+    }
   }
   cout << "\n" << endl;
 }

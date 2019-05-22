@@ -17,7 +17,7 @@ public:
     Comment(int _comment_id, Client* _client_user, std::string _content);
     int comment_id;
     std::string content;
-    std::string reply;
+    std::vector<std::string> reply;
     Client* client_user;
   };
 
