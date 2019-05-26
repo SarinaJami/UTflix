@@ -55,8 +55,6 @@ void UserInterface::processRequest(const string& cmd) const
     processPost(request);
   else if (*request_type == "GET")
     processGet(request);
-  else if (*request_type == "DELETE")
-    processDelete(request);
   else
     throw BadRequest();
 }
@@ -128,6 +126,11 @@ void UserInterface::processPost(const vector<string>& request) const
   else if (instruction == "delete_films" && question_mark == "?")
   {
     deleteFilm(request);
+    printSuccessMessage();
+  }
+  else if (instruction == "delete_comments" && question_mark == "?")
+  {
+    deleteComment(request);
     printSuccessMessage();
   }
   else
