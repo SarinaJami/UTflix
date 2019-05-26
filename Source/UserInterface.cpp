@@ -165,24 +165,6 @@ void UserInterface::processGet(const vector<string>& request) const
     throw NotFound();
 }
 
-void UserInterface::processDelete(const vector<string>& request) const
-{
-  string instruction = (request.size() > 1) ? request[1] : "";
-  string question_mark = (request.size() > 2) ? request[2] : "";
-  if (instruction == "films" && question_mark == "?")
-  {
-    deleteFilm(request);
-    printSuccessMessage();
-  }
-  else if (instruction == "comments" && question_mark == "?")
-  {
-    deleteComment(request);
-    printSuccessMessage();
-  }
-  else
-    throw NotFound();
-}
-
 void UserInterface::showAllNotifications(const vector<string>& request) const
 {
   if (find(request.begin(), request.end(), "read") == request.end() ||
