@@ -17,21 +17,24 @@ void UTflix::signUp(string email, string username, string password, int age,
 {
   if (!isUser(username, password) && isEmailValid(email))
   {
-    ++user_id_tracker;
-    if (is_publisher)
+    if (!isUserLogged())
     {
-      Publisher* publisher = new Publisher(user_id_tracker, username, password,
-        email, age);
-      publishers.push_back(publisher);
-      logged_publisher = publisher;
-      logged_client = logged_publisher;
-    }
-    else
-    {
-      Client* client = new Client(user_id_tracker, username, password, email, age);
-      clients.push_back(client);
-      logged_client = client;
-      logged_publisher = NULL;
+      ++user_id_tracker;
+      if (is_publisher)
+      {
+        Publisher* publisher = new Publisher(user_id_tracker, username, password,
+          email, age);
+        publishers.push_back(publisher);
+        logged_publisher = publisher;
+        logged_client = logged_publisher;
+      }
+      else
+      {
+        Client* client = new Client(user_id_tracker, username, password, email, age);
+        clients.push_back(client);
+        logged_client = client;
+        logged_publisher = NULL;
+      }
     }
   }
   else
@@ -40,23 +43,36 @@ void UTflix::signUp(string email, string username, string password, int age,
 
 void UTflix::login(string username, string password)
 {
-  for (int i = 0; i < publishers.size(); ++i)
+  if (!isUserLogged())
   {
-    if (publishers[i]->getUsername() == username && publishers[i]->getPassword() == password)
+    for (int i = 0; i < publishers.size(); ++i)
     {
-      logged_publisher = publishers[i];
-      logged_client = logged_publisher;
-      return;
+      if (publishers[i]->getUsername() == username && publishers[i]->getPassword() == password)
+      {
+        logged_publisher = publishers[i];
+        logged_client = logged_publisher;
+        return;
+      }
+    }
+    for (int i = 0; i < clients.size(); ++i)
+    {
+      if (clients[i]->getUsername() == username && clients[i]->getPassword() == password)
+      {
+        logged_client = clients[i];
+        logged_publisher = NULL;
+        return;
+      }
     }
   }
-  for (int i = 0; i < clients.size(); ++i)
+  throw BadRequest();
+}
+
+void UTflix::logout()
+{
+  if (isUserLogged())
   {
-    if (clients[i]->getUsername() == username && clients[i]->getPassword() == password)
-    {
-      logged_client = clients[i];
-      logged_publisher = NULL;
-      return;
-    }
+    logged_client = NULL;
+    logged_publisher = NULL;
   }
   throw BadRequest();
 }

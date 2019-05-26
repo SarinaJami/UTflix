@@ -133,6 +133,11 @@ void UserInterface::processPost(const vector<string>& request) const
     deleteComment(request);
     printSuccessMessage();
   }
+  else if (instruction == "logout")
+  {
+    utflix->logout();
+    printSuccessMessage();
+  }
   else
     throw NotFound();
 }

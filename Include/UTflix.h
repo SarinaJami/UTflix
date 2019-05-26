@@ -38,6 +38,7 @@ public:
     std::string director) const;
   void printUnseenNotifications() const;
   void printAllNotifications(int limit) const;
+  void logout();
 
   enum NOTIFICATION_TYPE {
     REPLY,
