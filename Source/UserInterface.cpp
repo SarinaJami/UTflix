@@ -53,8 +53,6 @@ void UserInterface::processRequest(const string& cmd) const
   auto request_type = request.begin();
   if (*request_type == "POST")
     processPost(request);
-  else if (*request_type == "PUT")
-    processPut(request);
   else if (*request_type == "GET")
     processGet(request);
   else if (*request_type == "DELETE")
@@ -120,19 +118,6 @@ void UserInterface::processPost(const vector<string>& request) const
   {
     utflix->addComment(stoi(findKeyWord(request, "film_id")),
       findKeyWord(request, "content"));
-    printSuccessMessage();
-  }
-  else
-    throw NotFound();
-}
-
-void UserInterface::processPut(const vector<string>& request) const
-{
-  string instruction = (request.size() > 1) ? request[1] : "";
-  string question_mark = (request.size() > 2) ? request[2] : "";
-  if (instruction == "films" && question_mark == "?")
-  {
-    editFilm(request);
     printSuccessMessage();
   }
   else
