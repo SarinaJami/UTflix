@@ -34,7 +34,6 @@ private:
     string word) const;
   void publishFilm(const std::vector<std::string>& request) const;
   void editFilm(const std::vector<std::string>& request) const;
-  void editFeature(int film_id, std::string feature, std::string content) const;
   void deleteFilm(const std::vector<std::string>& request) const;
   void showPublisherFilms(const std::vector<std::string>& request) const;
   std::vector<std::string> getFilmInfoForPrint(const std::vector<std::string>& request) const;

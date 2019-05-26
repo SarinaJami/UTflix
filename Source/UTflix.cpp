@@ -145,18 +145,21 @@ void UTflix::editFilm(int film_id, string feature, string content)
   if (!logged_publisher->ownsTheFilm(film_id))
     throw PermissionDenied();
 
-  if (feature == "name")
-    films[film_id - 1]->editName(content);
-  else if (feature == "year")
-    films[film_id - 1]->editYear(stoi(content));
-  else if (feature == "length")
-    films[film_id - 1]->editLength(stod(content));
-  else if (feature == "summary")
-    films[film_id - 1]->editSummary(content);
-  else if (feature == "director")
-    films[film_id - 1]->editDirector(content);
-  else
-    throw BadRequest();
+  if (!content.empty())
+  {
+    if (feature == "name")
+      films[film_id - 1]->editName(content);
+    else if (feature == "year")
+      films[film_id - 1]->editYear(stoi(content));
+    else if (feature == "length")
+      films[film_id - 1]->editLength(stod(content));
+    else if (feature == "summary")
+      films[film_id - 1]->editSummary(content);
+    else if (feature == "director")
+      films[film_id - 1]->editDirector(content);
+    else
+      throw BadRequest();
+  }
 }
 
 void UTflix::deleteFilm(int film_id)

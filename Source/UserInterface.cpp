@@ -318,17 +318,11 @@ vector<string> UserInterface::getFilmInfoForPublish(const vector<string>& reques
 void UserInterface::editFilm(const vector<string>& request) const
 {
   int film_id = stoi(findKeyWord(request, "film_id"));
-  editFeature(film_id, "name", findOptionalKeyWord(request, "name"));
-  editFeature(film_id, "year", findOptionalKeyWord(request, "year"));
-  editFeature(film_id, "length", findOptionalKeyWord(request, "length"));
-  editFeature(film_id, "summary", findOptionalKeyWord(request, "summary"));
-  editFeature(film_id, "director", findOptionalKeyWord(request, "director"));
-}
-
-void UserInterface::editFeature(int film_id, string feature, string content) const
-{
-  if (!content.empty())
-    utflix->editFilm(film_id, feature, content);
+  utflix->editFilm(film_id, "name", findOptionalKeyWord(request, "name"));
+  utflix->editFilm(film_id, "year", findOptionalKeyWord(request, "year"));
+  utflix->editFilm(film_id, "length", findOptionalKeyWord(request, "length"));
+  utflix->editFilm(film_id, "summary", findOptionalKeyWord(request, "summary"));
+  utflix->editFilm(film_id, "director", findOptionalKeyWord(request, "director"));
 }
 
 vector<string> UserInterface::getSignupInfo(const vector<string>& request) const
