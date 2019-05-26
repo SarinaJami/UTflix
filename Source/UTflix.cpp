@@ -378,7 +378,7 @@ void UTflix::showFilmDetails(int film_id) const
 void UTflix::printRecommendations(int film_id) const
 {
   vector<Film*> top_films = sortTopFilms(films_graph[film_id - 1]);
-  // top_films = cleanList(top_films, film_id);
+  top_films = cleanList(top_films, film_id);
 
   int count = 0;
   cout << "Recommendation Film" << endl;
@@ -395,9 +395,12 @@ vector<Film*> UTflix::cleanList(const vector<Film*>& top_films, int film_id) con
 {
   vector<Film*> filtered_films;
   for (int i = 0; i < top_films.size(); ++i)
-    if (!top_films[i]->isPurchaser(logged_client) && !top_films[i]->isRemoved() &&
-      i != film_id - 1)
-      filtered_films.push_back(top_films[i]);
+  {
+    if (top_films[i]->isPurchaser(logged_client) || top_films[i]->isRemoved() ||
+      top_films[i] == films[film_id - 1])
+      continue;
+    filtered_films.push_back(top_films[i]);
+  }
 
   return filtered_films;
 }
