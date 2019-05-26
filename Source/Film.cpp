@@ -23,6 +23,9 @@ Film::Rate::Rate(Client* _user, double _score) : score(_score), user(_user)
 
 void Film::addPurchaser(Client* purchaser)
 {
+  if (isPurchaser(purchaser))
+    throw PermissionDenied();
+
   purchasers.push_back(purchaser);
 }
 
@@ -226,4 +229,9 @@ Publisher* Film::getPublisher() const
 Client* Film::getCommenter(int _comment_id) const
 {
   return comments[searchForComment(_comment_id)].client_user;
+}
+
+const vector<Client*>& Film::getPurchasers() const
+{
+  return purchasers;
 }

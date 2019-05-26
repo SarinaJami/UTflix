@@ -191,8 +191,8 @@ void UserInterface::showAllNotifications(const vector<string>& request) const
 
 void UserInterface::showPurchasedFilms(const vector<string>& request) const
 {
-  if (find(request.begin(), request.end(), "?") == request.end())
-    return;
+  // if (find(request.begin(), request.end(), "?") == request.end())
+  //   return;
 
   vector<string> filmInfo = getPurchasedFilmsInfo(request);
 

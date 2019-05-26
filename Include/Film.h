@@ -36,6 +36,7 @@ public:
   bool isRemoved() const;
   Publisher* getPublisher() const;
   Client* getCommenter(int _comment_id) const;
+  const std::vector<Client*>& getPurchasers() const;
   bool isPurchaser(Client* purchaser) const;
 
   void editName(std::string _name);

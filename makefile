@@ -1,4 +1,4 @@
-CC := g++ -std=c++11
+CC := g++ --std=c++11
 INCLUDE_DIR = Include
 SRC_DIR = Source
 BUILD_DIR = Build
@@ -85,4 +85,4 @@ $(BUILD_DIR)/Exception.o : $(ExceptionSensitivityList)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR) *.o *.out
+	rm -rf $(BUILD_DIR) *.o out

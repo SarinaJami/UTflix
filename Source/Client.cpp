@@ -81,11 +81,6 @@ vector<Film*> Client::filterFilms(string name, double price, int min_year,
   return filtered_films;
 }
 
-void Client::addNotification(string notif, bool is_seen)
-{
-  notifications.push_back(make_pair(notif, is_seen));
-}
-
 ostream& operator<<(ostream& out, const Client* user)
 {
   out << user->user_id << " | " <<

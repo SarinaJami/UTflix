@@ -133,6 +133,7 @@ void UTflix::publishFilm(string name, int year, double length, double price, str
   logged_publisher->addFilm(film);
   films.push_back(film);
 
+  addNodeToFilmGraph(film_id_tracker);
   notifyFollowers();
 }
 
@@ -219,17 +220,17 @@ vector<Film*> UTflix::filterFilms(const vector<Film*>& _films, string name, doub
   vector<Film*> filtered_films = _films;
 
   if (!name.empty())
-    filtered_films = filterFilmsOnName(_films, name);
+    filtered_films = filterFilmsOnName(filtered_films, name);
   if (min_rate != -1)
-    filtered_films = filterFilmsOnMinRate(_films, min_rate);
+    filtered_films = filterFilmsOnMinRate(filtered_films, min_rate);
   if (min_year != -1)
-    filtered_films = filterFilmsOnMinYear(_films, min_year);
+    filtered_films = filterFilmsOnMinYear(filtered_films, min_year);
   if (price != -1)
-    filtered_films = filterFilmsOnPrice(_films, price);
+    filtered_films = filterFilmsOnPrice(filtered_films, price);
   if (max_year != -1)
-    filtered_films = filterFilmsOnMaxYear(_films, max_year);
+    filtered_films = filterFilmsOnMaxYear(filtered_films, max_year);
   if (!director.empty())
-    filtered_films = filterFilmsOnDirector(_films, director);
+    filtered_films = filterFilmsOnDirector(filtered_films, director);
 
   return filtered_films;
 }
@@ -374,42 +375,10 @@ void UTflix::showFilmDetails(int film_id) const
   printRecommendations(film_id);
 }
 
-void UTflix::sortTopFilms(vector<Film*>& sorted_films) const
-{
-  for (int i = 0; i < sorted_films.size(); ++i)
-  {
-    for (int j = i; j < sorted_films.size(); ++j)
-    {
-      if (sorted_films[i]->getRate() >= sorted_films[j]->getRate())
-        swap(sorted_films[i], sorted_films[j]);
-    }
-  }
-}
-
-void UTflix::swap(Film*& a, Film*& b) const
-{
-  Film* temp = a;
-  a = b;
-  b = temp;
-}
-
-vector<Film*> UTflix::omitWatchedFilms(int film_id) const
-{
-  vector<Film*> new_films;
-  for (int i = 0; i < films.size(); ++i)
-  {
-    if (films[i]->isPurchaser(logged_client) || films[i]->isRemoved())
-      continue;
-    if (i != film_id - 1)
-      new_films.push_back(films[i]);
-  }
-  return new_films;
-}
-
 void UTflix::printRecommendations(int film_id) const
 {
-  vector<Film*> top_films = omitWatchedFilms(film_id);
-  sortTopFilms(top_films);
+  vector<Film*> top_films = sortTopFilms(films_graph[film_id - 1]);
+  // top_films = cleanList(top_films, film_id);
 
   int count = 0;
   cout << "Recommendation Film" << endl;
@@ -422,6 +391,37 @@ void UTflix::printRecommendations(int film_id) const
   }
 }
 
+vector<Film*> UTflix::cleanList(const vector<Film*>& top_films, int film_id) const
+{
+  vector<Film*> filtered_films;
+  for (int i = 0; i < top_films.size(); ++i)
+    if (!top_films[i]->isPurchaser(logged_client) && !top_films[i]->isRemoved() &&
+      i != film_id - 1)
+      filtered_films.push_back(top_films[i]);
+
+  return filtered_films;
+}
+
+vector<Film*> UTflix::sortTopFilms(vector<int> list) const
+{
+  vector<Film*> top_films;
+  for (int i = 0; i < list.size(); ++i)
+  {
+    int index = 0;
+    for (int j = 0; j < list.size(); ++j)
+    {
+      if (list[index] < list[j])
+      {
+        index = j;
+      }
+    }
+    list[index] = -1;
+    top_films.push_back(films[index]);
+  }
+
+  return top_films;
+}
+
 void UTflix::buyFilm(int film_id)
 {
   if (!isUserLogged())
@@ -429,11 +429,12 @@ void UTflix::buyFilm(int film_id)
   if (!isArchiveFilm(film_id))
     throw NotFound();
 
-  logged_client->buyFilm(films[film_id - 1]);
   films[film_id - 1]->addPurchaser(logged_client);
+  logged_client->buyFilm(films[film_id - 1]);
   receiveMoney(film_id);
   calculatePublisherShare(film_id);
 
+  updateFilmGraph(film_id);
   notifyUser(BUY, films[film_id - 1]->getPublisher(), film_id);
 }
 
@@ -591,4 +592,40 @@ void UTflix::showMoney() const
     throw PermissionDenied();
 
   logged_client->showMoney();
+}
+
+void UTflix::addNodeToFilmGraph(int film_id)
+{
+  films_graph.push_back(vector<int> (films.size(), 0));
+  for (int i = 0; i < films.size() - 1; ++i)
+  {
+    films_graph[film_id - 1][i] = calculateWeight(film_id - 1, i);
+    films_graph[i].push_back(films_graph[film_id - 1][i]);
+  }
+}
+
+void UTflix::updateFilmGraph(int film_id)
+{
+  for (int i = 0; i < films.size(); ++i)
+  {
+    films_graph[film_id - 1][i] = calculateWeight(film_id - 1, i);
+    films_graph[i][film_id - 1] = films_graph[film_id - 1][i];
+  }
+}
+
+int UTflix::calculateWeight(int i, int j) const
+{
+  if (i == j)
+    return 0;
+
+  vector<Client*> p_one = films[i]->getPurchasers();
+  vector<Client*> p_two = films[j]->getPurchasers();
+  int weight = 0;
+
+  for (int i = 0; i < p_one.size(); ++i)
+    for (int j = 0; j < p_two.size(); ++j)
+      if (p_one[i] == p_two[j])
+        ++weight;
+
+  return weight;
 }

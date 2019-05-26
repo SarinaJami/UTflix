@@ -24,7 +24,6 @@ public:
   virtual void buyFilm(Film* film);
   virtual void viewPurchasedFilms(std::string name, double price, int min_year,
     int max_year, std::string director) const;
-  virtual void addNotification(std::string notif, bool is_seen);
   virtual void setNotification(std::string content, bool seen);
   virtual void printUnseenNotifications();
   virtual void printAllNotifications(int limit) const;

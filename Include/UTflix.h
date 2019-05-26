@@ -60,6 +60,7 @@ private:
   Publisher* logged_publisher;
   bool admin_is_logged;
   double money;
+  std::vector<std::vector<int>> films_graph;
 
   bool isUserLogged() const;
   bool isEmailValid(std::string email) const;
@@ -83,8 +84,9 @@ private:
   int searchForPublisher(int user_id) const;
   void printFilms(const std::vector<Film*>& filtered_films) const;
   void printRecommendations(int film_id) const;
-  std::vector<Film*> omitWatchedFilms(int film_id) const;
-  void sortTopFilms(std::vector<Film*>& sorted_films) const;
+  std::vector<Film*> cleanList(const std::vector<Film*>& top_films, int film_id) const;
+  std::vector<Film*> sortTopFilms(std::vector<int> list) const;
+  int findMax(const std::vector<int>& list, int max = -1) const;
   void swap(Film*& a, Film*& b) const;
   void receiveMoney(int film_id);
   void calculatePublisherShare(int film_id);
@@ -94,6 +96,9 @@ private:
   std::string setFilmIdentifier(int film_id) const;
   std::string setUserIdentifier() const;
   bool isAdmin(std::string username, std::string password) const;
+  void addNodeToFilmGraph(int film_id);
+  void updateFilmGraph(int film_id);
+  int calculateWeight(int i, int j) const;
 
 };
 
