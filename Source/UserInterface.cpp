@@ -120,6 +120,11 @@ void UserInterface::processPost(const vector<string>& request) const
       findKeyWord(request, "content"));
     printSuccessMessage();
   }
+  else if (instruction == "put_films" && question_mark == "?")
+  {
+    editFilm(request);
+    printSuccessMessage();
+  }
   else
     throw NotFound();
 }
