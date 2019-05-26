@@ -174,6 +174,8 @@ void UserInterface::processGet(const vector<string>& request) const
     else
       showAllNotifications(request);
   }
+  else if (instruction == "money")
+    utflix->showMoney();
   else
     throw NotFound();
 }

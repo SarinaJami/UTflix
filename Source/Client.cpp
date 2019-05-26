@@ -142,3 +142,8 @@ int Client::getId() const
 {
   return user_id;
 }
+
+void Client::showMoney() const
+{
+  cout << money << endl;
+}

@@ -39,6 +39,7 @@ public:
   void printUnseenNotifications() const;
   void printAllNotifications(int limit) const;
   void logout();
+  void showMoney() const;
 
   enum NOTIFICATION_TYPE {
     REPLY,

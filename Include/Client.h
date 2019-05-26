@@ -28,6 +28,7 @@ public:
   virtual void setNotification(std::string content, bool seen);
   virtual void printUnseenNotifications();
   virtual void printAllNotifications(int limit) const;
+  virtual void showMoney() const;
 
   friend std::ostream& operator<<(std::ostream& out, const Client* user);
 

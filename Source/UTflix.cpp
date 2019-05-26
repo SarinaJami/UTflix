@@ -555,3 +555,11 @@ void UTflix::notifyFollowers() const
   for (int i = 0; i < followers.size(); ++i)
     notifyUser(PUBLISH, followers[i]);
 }
+
+void UTflix::showMoney() const
+{
+  if (!isUserLogged())
+    throw PermissionDenied();
+
+  logged_client->showMoney();
+}
