@@ -58,6 +58,7 @@ private:
   int film_id_tracker;
   Client* logged_client;
   Publisher* logged_publisher;
+  bool admin_is_logged;
   double money;
 
   bool isUserLogged() const;
@@ -92,6 +93,7 @@ private:
   void notifyFollowers() const;
   std::string setFilmIdentifier(int film_id) const;
   std::string setUserIdentifier() const;
+  bool isAdmin(std::string username, std::string password) const;
 
 };
 

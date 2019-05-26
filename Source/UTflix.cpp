@@ -8,7 +8,7 @@
 using namespace std;
 
 UTflix::UTflix() : user_id_tracker(0), film_id_tracker(0), money(0),
-  logged_client(NULL), logged_publisher(NULL)
+  logged_client(NULL), logged_publisher(NULL), admin_is_logged(false)
 {
 }
 
@@ -45,6 +45,11 @@ void UTflix::login(string username, string password)
 {
   if (!isUserLogged())
   {
+    if (isAdmin(username, password))
+    {
+      admin_is_logged = true;
+      return;
+    }
     for (int i = 0; i < publishers.size(); ++i)
     {
       if (publishers[i]->getUsername() == username && publishers[i]->getPassword() == password)
@@ -69,22 +74,38 @@ void UTflix::login(string username, string password)
 
 void UTflix::logout()
 {
+  if (admin_is_logged)
+  {
+    admin_is_logged = false;
+    return;
+  }
   if (isUserLogged())
   {
     logged_client = NULL;
     logged_publisher = NULL;
+    return;
   }
+
   throw BadRequest();
 }
 
 bool UTflix::isUser(string username, string password) const
 {
+  if (isAdmin(username, password))
+    return true;
   for (int i = 0; i < publishers.size(); ++i)
     if (publishers[i]->getUsername() == username && publishers[i]->getPassword() == password)
       return true;
   for (int i = 0; i < clients.size(); ++i)
     if (clients[i]->getUsername() == username && clients[i]->getPassword() == password)
       return true;
+  return false;
+}
+
+bool UTflix::isAdmin(string username, string password) const
+{
+  if (username == "admin" && password == "admin")
+    return true;
   return false;
 }
 
@@ -558,6 +579,11 @@ void UTflix::notifyFollowers() const
 
 void UTflix::showMoney() const
 {
+  if (admin_is_logged)
+  {
+    cout << money << endl;
+    return;
+  }
   if (!isUserLogged())
     throw PermissionDenied();
 

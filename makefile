@@ -46,7 +46,7 @@ UTflixSensitivityList = \
 	$(INCLUDE_DIR)/Publisher.h \
 	$(INCLUDE_DIR)/Film.h \
 	$(INCLUDE_DIR)/Exception.h \
-	$(SRC_DIR)/UserInterface.cpp \
+	$(SRC_DIR)/UTflix.cpp \
 
 MainSensitivityList = \
 	$(INCLUDE_DIR)/UserInterface.h \
