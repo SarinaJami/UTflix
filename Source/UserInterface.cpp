@@ -125,6 +125,11 @@ void UserInterface::processPost(const vector<string>& request) const
     editFilm(request);
     printSuccessMessage();
   }
+  else if (instruction == "delete_films" && question_mark == "?")
+  {
+    deleteFilm(request);
+    printSuccessMessage();
+  }
   else
     throw NotFound();
 }
